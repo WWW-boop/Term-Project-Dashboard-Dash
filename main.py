@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask ,render_template
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -8,7 +8,7 @@ app = dash.Dash(__name__, server=server, url_base_pathname='/dashboard/')
 
 @app.server.route('/')
 def index():
-    return 'Hello from Flask!'
+    return render_template('index.html')
 
 @app.server.route('/dashboard/')
 def dashboard():
@@ -29,6 +29,9 @@ app.layout = html.Div([
         }
     )
 ])
+
+
+
 
 if __name__ == '__main__':
     server.run(debug=True)
