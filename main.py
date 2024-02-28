@@ -10,7 +10,7 @@ app = dash.Dash(__name__, server=server, url_base_pathname='/dashboard/')
 def index():
     return render_template('index.html')
 
-@app.server.route('/dashboard/')
+@app.server.route('/dashboard')
 def dashboard():
     return app.index()
 
