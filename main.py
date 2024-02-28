@@ -1,18 +1,34 @@
-from dash import Dash, html, dash_table
-import pandas as pd
+from flask import Flask
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
 
+server = Flask(__name__)
+app = dash.Dash(__name__, server=server, url_base_pathname='/dashboard/')
 
-df = pd.read_csv('air4thai_44t_2024-02-19_2024-02-20.csv')
+@app.server.route('/')
+def index():
+    return 'Hello from Flask!'
 
-
-app = Dash(__name__)
-
+@app.server.route('/dashboard/')
+def dashboard():
+    return app.index()
 
 app.layout = html.Div([
-    html.Div(children='My First App with Data'),
-    dash_table.DataTable(data=df.to_dict('records'), page_size=10)
+    html.H1('Dash Example'),
+    dcc.Graph(
+        id='example-graph',
+        figure={
+            'data': [
+                {'x': [1, 2, 3], 'y': [4, 1, 2], 'type': 'bar', 'name': 'SF'},
+                {'x': [1, 2, 3], 'y': [2, 4, 5], 'type': 'bar', 'name': u'Montréal'},
+            ],
+            'layout': {
+                'title': 'Dash Data Visualization'
+            }
+        }
+    )
 ])
 
-
 if __name__ == '__main__':
-    app.run(debug=True)
+    server.run(debug=True)
