@@ -1,37 +1,50 @@
-from flask import Flask ,render_template
+from flask import Flask, render_template
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_table
+import pandas as pd
 
 server = Flask(__name__)
 app = dash.Dash(__name__, server=server, url_base_pathname='/dashboard/')
 
-@app.server.route('/')
+
+df = pd.read_csv('csv\Air4thai_44t_2024-02-19_2024-02-20.csv')
+
+
+data_table = dash_table.DataTable(
+    id='datatable-interactivity',
+    columns=[
+        {"name": i, "id": i} for i in df.columns
+    ],
+    data=df.to_dict('records'),
+    editable=True,  
+    filter_action="native",  
+    sort_action="native",  
+    sort_mode="multi",  
+    column_selectable="single",  
+    row_selectable="multi",  
+    row_deletable=True,  
+    selected_columns=[],  
+    selected_rows=[],  
+    page_action="native", 
+    page_current=0,  
+    page_size=13,  
+)
+
+
+app.layout = html.Div([
+    html.H1('Dashboard'),
+    data_table
+])
+
+@server.route('/')
 def index():
     return render_template('index.html')
 
-@app.server.route('/dashboard')
+@server.route('/dashboard')
 def dashboard():
     return app.index()
-
-app.layout = html.Div([
-    html.H1('Dash Example'),
-    dcc.Graph(
-        id='example-graph',
-        figure={
-            'data': [
-                {'x': [1, 2, 3], 'y': [4, 1, 2], 'type': 'bar', 'name': 'SF'},
-                {'x': [1, 2, 3], 'y': [2, 4, 5], 'type': 'bar', 'name': u'Montréal'},
-            ],
-            'layout': {
-                'title': 'Dash Data Visualization'
-            }
-        }
-    )
-])
-
-
-
 
 if __name__ == '__main__':
     server.run(debug=True)
