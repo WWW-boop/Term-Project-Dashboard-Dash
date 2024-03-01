@@ -9,7 +9,7 @@ server = Flask(__name__)
 app = dash.Dash(__name__, server=server, url_base_pathname='/dashboard/')
 
 
-df = pd.read_csv('csv\Air4thai_44t_2024-02-19_2024-02-20.csv')
+df = pd.read_csv('csv\pm2.csv')
 
 
 data_table = dash_table.DataTable(
@@ -18,18 +18,18 @@ data_table = dash_table.DataTable(
         {"name": i, "id": i} for i in df.columns
     ],
     data=df.to_dict('records'),
-    editable=True,  
-    filter_action="native",  
-    sort_action="native",  
-    sort_mode="multi",  
-    column_selectable="single",  
-    row_selectable="multi",  
-    row_deletable=True,  
-    selected_columns=[],  
-    selected_rows=[],  
-    page_action="native", 
-    page_current=0,  
-    page_size=13,  
+    editable=True,
+    filter_action="native",
+    sort_action="native",
+    sort_mode="multi",
+    column_selectable="single",
+    row_selectable="multi",
+    row_deletable=True,
+    selected_columns=[],
+    selected_rows=[],
+    page_action="native",
+    page_current=0,
+    page_size=13,
 )
 
 
