@@ -9,7 +9,7 @@ server = Flask(__name__)
 app = dash.Dash(__name__, server=server, url_base_pathname='/dashboard/')
 
 
-df = pd.read_csv('csv\pm2.csv')
+df = pd.read_csv('csv\pm25.csv')
 
 
 data_table = dash_table.DataTable(
