@@ -12,7 +12,7 @@ df = pd.read_csv('csv/pm25_new.csv')
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SKETCHY])
 
-pollutants = ['PM25', 'WS','TEMP', 'RH', 'WD']
+pollutants = ['PM25','O3', 'WS','TEMP', 'RH', 'WD']
 columns = [{'label': col, 'value': col} for col in df.columns if col in pollutants]
 columns.append({'label': 'All Pollutants', 'value': 'all'})
 
