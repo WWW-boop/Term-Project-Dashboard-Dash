@@ -21,17 +21,17 @@ app.layout = html.Div([
     html.Div([
         dcc.DatePickerSingle(
             id='start-date-picker',
-            min_date_allowed=pd.to_datetime('2024-01-01'),
-            max_date_allowed=pd.to_datetime('2024-03-01'),
-            initial_visible_month=pd.to_datetime('2024-01-01'),
+            min_date_allowed=pd.to_datetime('2023-12-01'),
+            max_date_allowed=pd.to_datetime('2024-02-27'),
+            initial_visible_month=pd.to_datetime('2023-12-01'),
             date=pd.to_datetime('2024-01-01'),
             display_format='YYYY-MM-DD'
         ),
         dcc.DatePickerSingle(
             id='end-date-picker',
-            min_date_allowed=pd.to_datetime('2024-01-01'),
-            max_date_allowed=pd.to_datetime('2024-03-01'),
-            initial_visible_month=pd.to_datetime('2024-03-01'),
+            min_date_allowed=pd.to_datetime('2023-12-01'),
+            max_date_allowed=pd.to_datetime('2024-02-27'),
+            initial_visible_month=pd.to_datetime('2024-02-27'),
             date=pd.to_datetime('2024-03-01'),
             display_format='YYYY-MM-DD'
         ),
