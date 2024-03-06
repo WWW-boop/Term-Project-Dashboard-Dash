@@ -7,12 +7,12 @@ import plotly.express as px
 import dash_bootstrap_components as dbc
 
 
-df = pd.read_csv('csv/pm25.csv')
+df = pd.read_csv('csv/pm25_new.csv')
 
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.VAPOR])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SKETCHY])
 
-pollutants = ['PM25', 'PM10', 'O3', 'NO2', 'SO2', 'CO']
+pollutants = ['PM25', 'WS','TEMP', 'RH', 'WD']
 columns = [{'label': col, 'value': col} for col in df.columns if col in pollutants]
 columns.append({'label': 'All Pollutants', 'value': 'all'})
 
@@ -77,7 +77,7 @@ def update_line_graph(selected_pollutant, start_date, end_date):
             xaxis=dict(title='Date'),
             yaxis=dict(title='Concentration'),
             hovermode='closest',
-            template="plotly_dark"
+            template="simple_white"
         )
         fig.update_layout(layout)
     else:
@@ -93,7 +93,7 @@ def update_line_graph(selected_pollutant, start_date, end_date):
             xaxis=dict(title='Date'),
             yaxis=dict(title='Concentration'),
             hovermode='closest',
-            template="plotly_dark"
+            template="simple_white"
         )
         fig.update_layout(layout)
 
@@ -121,12 +121,12 @@ def update_scatter_plot(selected_pollutant, start_date, end_date):
             xaxis=dict(title='Date'),
             yaxis=dict(title='Concentration'),
             hovermode='closest',
-            template="plotly_dark"
+            template="simple_white"
         )
         fig.update_layout(layout)
     else:
         fig = px.scatter(filtered_df, x='DATETIMEDATA', y=selected_pollutant,
-                         template="plotly_dark", title=f'{selected_pollutant} over Time')
+                         template="simple_white", title=f'{selected_pollutant} over Time')
     return fig
 
 @app.callback(
@@ -141,14 +141,14 @@ def update_pie_chart(selected_pollutant, start_date, end_date):
         fig = go.Figure(data=[go.Pie(labels=pollutants, values=[filtered_df[pollutant].sum() for pollutant in pollutants], hole=0.4)])
         layout = go.Layout(
             title='Total Concentration by Pollutant',
-            template="plotly_dark"
+            template="simple_white"
         )
         fig.update_layout(layout)
     else:
         fig = go.Figure(data=[go.Pie(labels=[selected_pollutant], values=[filtered_df[selected_pollutant].sum()], hole=0.4)])
         layout = go.Layout(
             title=f'Total Concentration of {selected_pollutant}',
-            template="plotly_dark"
+            template="simple_white"
         )
         fig.update_layout(layout)
     return fig
@@ -167,7 +167,7 @@ def update_bar_chart(selected_pollutant, start_date, end_date):
             title='Total Concentration by Pollutant (Bar Chart)',
             xaxis=dict(title='Pollutant'),
             yaxis=dict(title='Total Concentration'),
-            template="plotly_dark"
+            template="simple_white"
         )
         fig.update_layout(layout)
     else:
@@ -176,7 +176,7 @@ def update_bar_chart(selected_pollutant, start_date, end_date):
             title=f'Total Concentration of {selected_pollutant} (Bar Chart)',
             xaxis=dict(title='Pollutant'),
             yaxis=dict(title='Total Concentration'),
-            template="plotly_dark"
+            template="simple_white"
         )
         fig.update_layout(layout)
     return fig
