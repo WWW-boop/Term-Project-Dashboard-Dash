@@ -24,7 +24,8 @@ app.layout = html.Div([
                 max_date_allowed=pd.to_datetime('2024-02-27'),
                 initial_visible_month=pd.to_datetime('2023-12-01'),
                 date=pd.to_datetime('2024-01-01'),
-                display_format='YYYY-MM-DD'
+                display_format='YYYY-MM-DD',
+                className="btn btn-success btn-outline-danger"
             ),
             type="cube"
         ),
@@ -35,7 +36,8 @@ app.layout = html.Div([
                 max_date_allowed=pd.to_datetime('2024-02-27'),
                 initial_visible_month=pd.to_datetime('2024-02-27'),
                 date=pd.to_datetime('2024-03-01'),
-                display_format='YYYY-MM-DD'
+                display_format='YYYY-MM-DD',
+                className="btn btn-success btn-outline-danger"
             ),
             type="cube"
         ),
@@ -43,7 +45,8 @@ app.layout = html.Div([
             dcc.Dropdown(
                 id='dropdown',
                 options=columns,
-                value='PM25'
+                value='PM25',
+                style={'backgroundColor': '#E7DDFF'}
             ),
             type="cube"
         ),
