@@ -17,39 +17,60 @@ columns.append({'label': 'All Pollutants', 'value': 'all'})
 
 app.layout = html.Div([
     html.Div([
-        dcc.DatePickerSingle(
-            id='start-date-picker',
-            min_date_allowed=pd.to_datetime('2023-12-01'),
-            max_date_allowed=pd.to_datetime('2024-02-27'),
-            initial_visible_month=pd.to_datetime('2023-12-01'),
-            date=pd.to_datetime('2024-01-01'),
-            display_format='YYYY-MM-DD'
+        dcc.Loading(
+            dcc.DatePickerSingle(
+                id='start-date-picker',
+                min_date_allowed=pd.to_datetime('2023-12-01'),
+                max_date_allowed=pd.to_datetime('2024-02-27'),
+                initial_visible_month=pd.to_datetime('2023-12-01'),
+                date=pd.to_datetime('2024-01-01'),
+                display_format='YYYY-MM-DD'
+            ),
+            type="cube"
         ),
-        dcc.DatePickerSingle(
-            id='end-date-picker',
-            min_date_allowed=pd.to_datetime('2023-12-01'),
-            max_date_allowed=pd.to_datetime('2024-02-27'),
-            initial_visible_month=pd.to_datetime('2024-02-27'),
-            date=pd.to_datetime('2024-03-01'),
-            display_format='YYYY-MM-DD'
+        dcc.Loading(
+            dcc.DatePickerSingle(
+                id='end-date-picker',
+                min_date_allowed=pd.to_datetime('2023-12-01'),
+                max_date_allowed=pd.to_datetime('2024-02-27'),
+                initial_visible_month=pd.to_datetime('2024-02-27'),
+                date=pd.to_datetime('2024-03-01'),
+                display_format='YYYY-MM-DD'
+            ),
+            type="cube"
         ),
-        dcc.Dropdown(
-            id='dropdown',
-            options=columns,
-            value='PM25'
+        dcc.Loading(
+            dcc.Dropdown(
+                id='dropdown',
+                options=columns,
+                value='PM25'
+            ),
+            type="cube"
         ),
-        dcc.Graph(id='air-quality-graph')
+        dcc.Loading(
+            dcc.Graph(id='air-quality-graph'),
+            type="cube"
+        )
     ]),
     html.Div([
         html.Div([
-            dcc.Graph(id='example-scatter-plot')
+            dcc.Loading(
+                dcc.Graph(id='example-scatter-plot'),
+                type="cube"
+            )
         ], className="six columns"),
         html.Div([
-            dcc.Graph(id='pie-chart')
+            dcc.Loading(
+                dcc.Graph(id='pie-chart'),
+                type="cube"
+            )
         ], className="six columns")
     ], className="row"),
     html.Div([
-        dcc.Graph(id='bar-chart')
+        dcc.Loading(
+            dcc.Graph(id='bar-chart'),
+            type="cube"
+        )
     ]),
     html.Div([
         html.H4('Animated GDP and population over decades'),
@@ -57,10 +78,13 @@ app.layout = html.Div([
         dcc.RadioItems(
             id='selection',
             options=[{"label": "GDP - Scatter", "value": "GDP - Scatter"},
-                    {"label": "Population - Bar", "value": "Population - Bar"}],
+                     {"label": "Population - Bar", "value": "Population - Bar"}],
             value='GDP - Scatter',
         ),
-        dcc.Loading(dcc.Graph(id="animated-graph"), type="cube")
+        dcc.Loading(
+            dcc.Graph(id="animated-graph"),
+            type="cube"
+        )
     ])
 ])
 
