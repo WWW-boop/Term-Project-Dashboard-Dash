@@ -5,53 +5,89 @@ import pandas as pd
 import plotly.graph_objs as go
 import plotly.express as px
 import dash_bootstrap_components as dbc
-
-
-df = pd.read_csv('csv/pm25_new.csv')
-
+import numpy as np
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SKETCHY])
+
+df = pd.read_csv('csv/pm25_new.csv')
 
 pollutants = ['PM25','O3', 'WS','TEMP', 'RH', 'WD']
 columns = [{'label': col, 'value': col} for col in df.columns if col in pollutants]
 columns.append({'label': 'All Pollutants', 'value': 'all'})
 
-
 app.layout = html.Div([
     html.Div([
-        dcc.DatePickerSingle(
-            id='start-date-picker',
-            min_date_allowed=pd.to_datetime('2023-12-01'),
-            max_date_allowed=pd.to_datetime('2024-02-27'),
-            initial_visible_month=pd.to_datetime('2023-12-01'),
-            date=pd.to_datetime('2024-01-01'),
-            display_format='YYYY-MM-DD'
+        dcc.Loading(
+            dcc.DatePickerSingle(
+                id='start-date-picker',
+                min_date_allowed=pd.to_datetime('2023-12-01'),
+                max_date_allowed=pd.to_datetime('2024-02-27'),
+                initial_visible_month=pd.to_datetime('2023-12-01'),
+                date=pd.to_datetime('2024-01-01'),
+                display_format='YYYY-MM-DD',
+                className="btn btn-success btn-outline-danger"
+            ),
+            type="cube"
         ),
-        dcc.DatePickerSingle(
-            id='end-date-picker',
-            min_date_allowed=pd.to_datetime('2023-12-01'),
-            max_date_allowed=pd.to_datetime('2024-02-27'),
-            initial_visible_month=pd.to_datetime('2024-02-27'),
-            date=pd.to_datetime('2024-03-01'),
-            display_format='YYYY-MM-DD'
+        dcc.Loading(
+            dcc.DatePickerSingle(
+                id='end-date-picker',
+                min_date_allowed=pd.to_datetime('2023-12-01'),
+                max_date_allowed=pd.to_datetime('2024-02-27'),
+                initial_visible_month=pd.to_datetime('2024-02-27'),
+                date=pd.to_datetime('2024-03-01'),
+                display_format='YYYY-MM-DD',
+                className="btn btn-success btn-outline-danger"
+            ),
+            type="cube"
         ),
-        dcc.Dropdown(
-            id='dropdown',
-            options=columns,
-            value='PM25'  
+        dcc.Loading(
+            dcc.Dropdown(
+                id='dropdown',
+                options=columns,
+                value='PM25',
+                style={'backgroundColor': '#E7DDFF'}
+            ),
+            type="cube"
         ),
-        dcc.Graph(id='air-quality-graph')
+        dcc.Loading(
+            dcc.Graph(id='air-quality-graph'),
+            type="cube"
+        )
     ]),
     html.Div([
         html.Div([
-            dcc.Graph(id='example-scatter-plot')
+            dcc.Loading(
+                dcc.Graph(id='example-scatter-plot'),
+                type="cube"
+            )
         ], className="six columns"),
         html.Div([
-            dcc.Graph(id='pie-chart')
+            dcc.Loading(
+                dcc.Graph(id='pie-chart'),
+                type="cube"
+            )
         ], className="six columns")
     ], className="row"),
     html.Div([
-        dcc.Graph(id='bar-chart')
+        dcc.Loading(
+            dcc.Graph(id='bar-chart'),
+            type="cube"
+        )
+    ]),
+    html.Div([
+        html.H4('Animated GDP and population over decades'),
+        html.P("Select an animation:"),
+        dcc.RadioItems(
+            id='selection',
+            options=[{"label": "GDP - Scatter", "value": "GDP - Scatter"},
+                     {"label": "Population - Bar", "value": "Population - Bar"}],
+            value='GDP - Scatter',
+        ),
+        dcc.Loading(
+            dcc.Graph(id="animated-graph"),
+            type="cube"
+        )
     ])
 ])
 
@@ -70,7 +106,8 @@ def update_line_graph(selected_pollutant, start_date, end_date):
                 x=filtered_df['DATETIMEDATA'],
                 y=filtered_df[pollutant],
                 mode='lines',
-                name=pollutant
+                name=pollutant,
+
             ))
         layout = go.Layout(
             title='Air Quality',
@@ -85,15 +122,17 @@ def update_line_graph(selected_pollutant, start_date, end_date):
             x=filtered_df['DATETIMEDATA'],
             y=filtered_df[selected_pollutant],
             mode='lines',
-            name=selected_pollutant
+            name=selected_pollutant,
+            line=dict(color='#30E3CA')
         )
         fig = go.Figure(data=[trace])
         layout = go.Layout(
             title='Air Quality',
-            xaxis=dict(title='Date'),
-            yaxis=dict(title='Concentration'),
+            xaxis=dict(title='Date', showgrid=False),
+            yaxis=dict(title='Concentration', showgrid=False),
             hovermode='closest',
-            template="simple_white"
+            plot_bgcolor='#E4F9F5',  # สีพื้นหลังกราฟ
+            paper_bgcolor='#E4F9F5',
         )
         fig.update_layout(layout)
 
@@ -126,7 +165,7 @@ def update_scatter_plot(selected_pollutant, start_date, end_date):
         fig.update_layout(layout)
     else:
         fig = px.scatter(filtered_df, x='DATETIMEDATA', y=selected_pollutant,
-                         template="simple_white", title=f'{selected_pollutant} over Time')
+                        template="simple_white", title=f'{selected_pollutant} over Time')
     return fig
 
 @app.callback(
@@ -179,6 +218,24 @@ def update_bar_chart(selected_pollutant, start_date, end_date):
             template="simple_white"
         )
         fig.update_layout(layout)
+    return fig
+
+@app.callback(
+    Output("animated-graph", "figure"),
+    Input("selection", "value"))
+def display_animated_graph(selection):
+    if selection == "GDP - Scatter":
+        fig = px.scatter(
+            df, x="DATETIMEDATA", y="PM25", animation_frame="DATETIMEDATA",
+            range_x=[df['DATETIMEDATA'].min(), df['DATETIMEDATA'].max()],
+            title="PM25 over Time"
+        )
+    else:  # Assuming Population - Bar
+        fig = px.bar(
+            df, x="DATETIMEDATA", y="PM25",
+            animation_frame="DATETIMEDATA", range_y=[0, df['PM25'].max()],
+            title="PM25 over Time"
+        )
     return fig
 
 if __name__ == '__main__':
