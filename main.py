@@ -41,6 +41,8 @@ app.layout = html.Div([
             ),
             type="cube"
         ),
+    ], style={'display': 'flex'}),
+    html.Div([
         dcc.Loading(
             dcc.Dropdown(
                 id='dropdown',
@@ -50,17 +52,36 @@ app.layout = html.Div([
             ),
             type="cube"
         ),
-        dcc.Loading(
-            dcc.Graph(id='air-quality-graph'),
-            type="cube"
-        )
     ]),
+
+    # เพิ่มโค้ดที่ต้องการรวมตรงนี้
+    html.Div([
+        html.Label('Select Your Favorite Chart Under:'),
+        dcc.Dropdown(
+            id='chart-type-dropdown',
+            options=[
+                {'label': 'None', 'value': 'none'},
+                {'label': 'Scatter Plot', 'value': 'scatter'},
+                {'label': 'Bar Chart', 'value': 'bar'},
+                {'label': 'Pie Chart', 'value': 'pie'}
+            ],
+            style={'backgroundColor': '#E7DDFF'}
+        ),
+        html.Div(id='selected-chart')
+    ]),
+
     html.Div([
         html.Div([
             dcc.Loading(
-                dcc.Graph(id='example-scatter-plot'),
-                type="cube"
-            )
+            dcc.Graph(id='air-quality-graph'),
+            type="cube"
+        )
+        ], className="six columns"),
+        html.Div([
+            dcc.Loading(
+            dcc.Graph(id='example-scatter-plot'),
+            type="cube"
+        )
         ], className="six columns"),
         html.Div([
             dcc.Loading(
@@ -81,21 +102,47 @@ app.layout = html.Div([
         dcc.RadioItems(
             id='selection',
             options=[{"label": "GDP - Scatter", "value": "GDP - Scatter"},
-                     {"label": "Population - Bar", "value": "Population - Bar"}],
+                    {"label": "Population - Bar", "value": "Population - Bar"}],
             value='GDP - Scatter',
         ),
         dcc.Loading(
             dcc.Graph(id="animated-graph"),
             type="cube"
         )
-    ])
+    ]),
+
+
 ])
+
+
+@app.callback(
+    Output('selected-chart', 'children'),
+    [Input('chart-type-dropdown', 'value')]
+)
+def update_selected_chart(chart_type):
+    if chart_type == 'none':
+        pass
+    elif chart_type == 'scatter':
+        return dcc.Loading(
+                    dcc.Graph(id='example-scatter-plot'),
+                    type="cube"
+                )
+    elif chart_type == 'bar':
+        return dcc.Loading(
+            dcc.Graph(id='bar-chart'),
+            type="cube"
+        )
+    elif chart_type == 'pie':
+        return dcc.Loading(
+                dcc.Graph(id='pie-chart'),
+                type="cube"
+            )
 
 @app.callback(
     Output('air-quality-graph', 'figure'),
     [Input('dropdown', 'value'),
-     Input('start-date-picker', 'date'),
-     Input('end-date-picker', 'date')]
+    Input('start-date-picker', 'date'),
+    Input('end-date-picker', 'date')]
 )
 def update_line_graph(selected_pollutant, start_date, end_date):
     filtered_df = df[(df['DATETIMEDATA'] >= start_date) & (df['DATETIMEDATA'] <= end_date)]
@@ -114,7 +161,9 @@ def update_line_graph(selected_pollutant, start_date, end_date):
             xaxis=dict(title='Date'),
             yaxis=dict(title='Concentration'),
             hovermode='closest',
-            template="simple_white"
+            template="simple_white",
+            plot_bgcolor='#E4F9F5',  # สีพื้นหลังกราฟ
+            paper_bgcolor='#E4F9F5',
         )
         fig.update_layout(layout)
     else:
@@ -141,10 +190,10 @@ def update_line_graph(selected_pollutant, start_date, end_date):
 @app.callback(
     Output('example-scatter-plot', 'figure'),
     [Input('dropdown', 'value'),
-     Input('start-date-picker', 'date'),
-     Input('end-date-picker', 'date')]
+    Input('start-date-picker', 'date'),
+    Input('end-date-picker', 'date')]
 )
-def update_scatter_plot(selected_pollutant, start_date, end_date):
+def update_example_scatter_plot(selected_pollutant, start_date, end_date):
     filtered_df = df[(df['DATETIMEDATA'] >= start_date) & (df['DATETIMEDATA'] <= end_date)]
     if selected_pollutant == 'all':
         fig = go.Figure()
@@ -160,19 +209,24 @@ def update_scatter_plot(selected_pollutant, start_date, end_date):
             xaxis=dict(title='Date'),
             yaxis=dict(title='Concentration'),
             hovermode='closest',
-            template="simple_white"
+            template="simple_white",
+            plot_bgcolor='#E4F9F5',  # สีพื้นหลังกราฟ
+            paper_bgcolor='#E4F9F5',  # สีพื้นกระดาน
         )
         fig.update_layout(layout)
     else:
         fig = px.scatter(filtered_df, x='DATETIMEDATA', y=selected_pollutant,
                         template="simple_white", title=f'{selected_pollutant} over Time')
+        fig.update_layout(plot_bgcolor='#E4F9F5', paper_bgcolor='#E4F9F5')  # สีพื้นหลังกราฟและพื้นกระดาน
     return fig
+
+
 
 @app.callback(
     Output('pie-chart', 'figure'),
     [Input('dropdown', 'value'),
-     Input('start-date-picker', 'date'),
-     Input('end-date-picker', 'date')]
+    Input('start-date-picker', 'date'),
+    Input('end-date-picker', 'date')]
 )
 def update_pie_chart(selected_pollutant, start_date, end_date):
     filtered_df = df[(df['DATETIMEDATA'] >= start_date) & (df['DATETIMEDATA'] <= end_date)]
@@ -180,14 +234,18 @@ def update_pie_chart(selected_pollutant, start_date, end_date):
         fig = go.Figure(data=[go.Pie(labels=pollutants, values=[filtered_df[pollutant].sum() for pollutant in pollutants], hole=0.4)])
         layout = go.Layout(
             title='Total Concentration by Pollutant',
-            template="simple_white"
+            template="simple_white",
+            plot_bgcolor='#E4F9F5',  # สีพื้นหลังกราฟ
+            paper_bgcolor='#E4F9F5',
         )
         fig.update_layout(layout)
     else:
         fig = go.Figure(data=[go.Pie(labels=[selected_pollutant], values=[filtered_df[selected_pollutant].sum()], hole=0.4)])
         layout = go.Layout(
             title=f'Total Concentration of {selected_pollutant}',
-            template="simple_white"
+            template="simple_white",
+            plot_bgcolor='#E4F9F5',  # สีพื้นหลังกราฟ
+            paper_bgcolor='#E4F9F5',
         )
         fig.update_layout(layout)
     return fig
@@ -195,8 +253,8 @@ def update_pie_chart(selected_pollutant, start_date, end_date):
 @app.callback(
     Output('bar-chart', 'figure'),
     [Input('dropdown', 'value'),
-     Input('start-date-picker', 'date'),
-     Input('end-date-picker', 'date')]
+    Input('start-date-picker', 'date'),
+    Input('end-date-picker', 'date')]
 )
 def update_bar_chart(selected_pollutant, start_date, end_date):
     filtered_df = df[(df['DATETIMEDATA'] >= start_date) & (df['DATETIMEDATA'] <= end_date)]
@@ -206,7 +264,9 @@ def update_bar_chart(selected_pollutant, start_date, end_date):
             title='Total Concentration by Pollutant (Bar Chart)',
             xaxis=dict(title='Pollutant'),
             yaxis=dict(title='Total Concentration'),
-            template="simple_white"
+            template="simple_white",
+            plot_bgcolor='#E4F9F5',  # สีพื้นหลังกราฟ
+            paper_bgcolor='#E4F9F5',
         )
         fig.update_layout(layout)
     else:
@@ -215,28 +275,39 @@ def update_bar_chart(selected_pollutant, start_date, end_date):
             title=f'Total Concentration of {selected_pollutant} (Bar Chart)',
             xaxis=dict(title='Pollutant'),
             yaxis=dict(title='Total Concentration'),
-            template="simple_white"
+            template="simple_white",
+            plot_bgcolor='#E4F9F5',  # สีพื้นหลังกราฟ
+            paper_bgcolor='#E4F9F5',
         )
         fig.update_layout(layout)
     return fig
 
 @app.callback(
     Output("animated-graph", "figure"),
-    Input("selection", "value"))
-def display_animated_graph(selection):
+    [Input("selection", "value"),
+    Input('start-date-picker', 'date'),
+    Input('end-date-picker', 'date')]
+)
+def display_animated_graph(selection, start_date, end_date):
+    filtered_df = df[(df['DATETIMEDATA'] >= start_date) & (df['DATETIMEDATA'] <= end_date)]
     if selection == "GDP - Scatter":
         fig = px.scatter(
-            df, x="DATETIMEDATA", y="PM25", animation_frame="DATETIMEDATA",
-            range_x=[df['DATETIMEDATA'].min(), df['DATETIMEDATA'].max()],
+            filtered_df, x="DATETIMEDATA", y="PM25", animation_frame="DATETIMEDATA",
+            range_x=[filtered_df['DATETIMEDATA'].min(), filtered_df['DATETIMEDATA'].max()],
             title="PM25 over Time"
         )
     else:  # Assuming Population - Bar
         fig = px.bar(
-            df, x="DATETIMEDATA", y="PM25",
-            animation_frame="DATETIMEDATA", range_y=[0, df['PM25'].max()],
+            filtered_df, x="DATETIMEDATA", y="PM25",
+            animation_frame="DATETIMEDATA", range_y=[0, filtered_df['PM25'].max()],
             title="PM25 over Time"
         )
+    fig.update_layout(
+        plot_bgcolor='#E4F9F5',  # สีพื้นหลังกราฟ
+        paper_bgcolor='#E4F9F5',  # สีพื้นกระดาน
+    )
     return fig
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)
