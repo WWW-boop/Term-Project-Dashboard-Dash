@@ -10,6 +10,7 @@ import numpy as np
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SKETCHY])
 
 df = pd.read_csv('csv/pm25_new.csv')
+pd_pm25 = pd.read_csv('csv/predicted_pm25--5.csv')
 
 pollutants = ['PM25','O3', 'WS','TEMP', 'RH', 'WD']
 columns = [{'label': col, 'value': col} for col in df.columns if col in pollutants]
@@ -65,7 +66,7 @@ app.layout = html.Div([
                 {'label': 'Bar Chart', 'value': 'bar'},
                 {'label': 'Pie Chart', 'value': 'pie'}
             ],
-            style={'backgroundColor': '#E7DDFF'}
+            style={'backgroundColor': '#E7DDFF', 'margin-top': '10px', 'margin-bottom': '10px'}
         ),
         html.Div(id='selected-chart')
     ]),
@@ -96,21 +97,6 @@ app.layout = html.Div([
             type="cube"
         )
     ]),
-    html.Div([
-        html.H4('Animated GDP and population over decades'),
-        html.P("Select an animation:"),
-        dcc.RadioItems(
-            id='selection',
-            options=[{"label": "GDP - Scatter", "value": "GDP - Scatter"},
-                    {"label": "Population - Bar", "value": "Population - Bar"}],
-            value='GDP - Scatter',
-        ),
-        dcc.Loading(
-            dcc.Graph(id="animated-graph"),
-            type="cube"
-        )
-    ]),
-
 
 ])
 
@@ -282,31 +268,7 @@ def update_bar_chart(selected_pollutant, start_date, end_date):
         fig.update_layout(layout)
     return fig
 
-@app.callback(
-    Output("animated-graph", "figure"),
-    [Input("selection", "value"),
-    Input('start-date-picker', 'date'),
-    Input('end-date-picker', 'date')]
-)
-def display_animated_graph(selection, start_date, end_date):
-    filtered_df = df[(df['DATETIMEDATA'] >= start_date) & (df['DATETIMEDATA'] <= end_date)]
-    if selection == "GDP - Scatter":
-        fig = px.scatter(
-            filtered_df, x="DATETIMEDATA", y="PM25", animation_frame="DATETIMEDATA",
-            range_x=[filtered_df['DATETIMEDATA'].min(), filtered_df['DATETIMEDATA'].max()],
-            title="PM25 over Time"
-        )
-    else:  # Assuming Population - Bar
-        fig = px.bar(
-            filtered_df, x="DATETIMEDATA", y="PM25",
-            animation_frame="DATETIMEDATA", range_y=[0, filtered_df['PM25'].max()],
-            title="PM25 over Time"
-        )
-    fig.update_layout(
-        plot_bgcolor='#E4F9F5',  # สีพื้นหลังกราฟ
-        paper_bgcolor='#E4F9F5',  # สีพื้นกระดาน
-    )
-    return fig
+
 
 
 if __name__ == '__main__':
