@@ -6,7 +6,7 @@ import plotly.graph_objs as go
 import plotly.express as px
 import dash_bootstrap_components as dbc
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SKETCHY, 'style.css'])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SKETCHY, 'static/style.css'])
 
 # Load data
 df = pd.read_csv('csv/pm25_new2.csv')
@@ -47,7 +47,7 @@ app.layout = html.Div([
             ),
             type="cube"
         ),
-    ], style={'display': 'flex'}),
+    ], style={'display': 'flex', 'justify-content': 'center'}),
 
     # Dropdown for selecting pollutant and chart type
     html.Div([
@@ -56,7 +56,7 @@ app.layout = html.Div([
                 id='dropdown',
                 options=columns,
                 value='PM25',
-                style={'backgroundColor': '#E7DDFF'}
+                style={'backgroundColor': '#E7DDFF', 'borderRadius': '10px'}
             ),
             type="cube"
         ),
@@ -70,7 +70,7 @@ app.layout = html.Div([
                 {'label': 'Pie Chart', 'value': 'piex'},
                 {'label': 'data','value': 'tablex'}
             ],
-            style={'backgroundColor': '#E7DDFF', 'margin-top': '10px', 'margin-bottom': '10px'}
+            style={'backgroundColor': '#E7DDFF', 'borderRadius': '10px'}
         ),
         html.Div(id='selected-chart')
     ]),
@@ -129,10 +129,34 @@ app.layout = html.Div([
             type="cube"
         ),
 
-    ], style={'display': 'flex'}),
+    ], style={'display': 'flex', 'justify-content': 'center'}),
     dcc.Graph(id='predict-PM25-graph'),
-    html.Div(children='predict PM25  with Data'),
-    dash_table.DataTable(data=pdi.to_dict('records'), page_size=10),
+    html.Div(children='Predict PM25 with Data', style={'color': 'green', 'font-weight': 'bold', 'margin-bottom': '10px'}),  # Add a title or description
+    dash_table.DataTable(
+        id='datatable',
+        data=pdi.to_dict('records'),
+        columns=[{'name': col, 'id': col} for col in pdi.columns],  # Assuming pdi is your DataFrame
+        page_size=10,
+        style_table={'overflowX': 'auto'},  # Enable horizontal scroll
+        style_header={
+            'backgroundColor': 'lightgreen',  # Background color for headers
+            'fontWeight': 'bold'  # Bold text for headers
+        },
+        style_data={
+            'whiteSpace': 'normal',  # Allow text wrapping
+            'height': 'auto',  # Set row height to auto
+            'backgroundColor': 'lightyellow'  # Background color for data cells
+        },
+        style_cell={
+            'textAlign': 'center',  # Center-align text in cells
+            'minWidth': '100px',  # Set minimum width of cells
+            'width': '150px',  # Set default width of cells
+            'maxWidth': '300px',  # Set maximum width of cells
+            'overflow': 'hidden',  # Hide overflow content in cells
+            'textOverflow': 'ellipsis',  # Ellipsis for overflow text
+            'border': '1px solid green'  # Border around cells
+        }
+    ),
     #wd zone
     html.Div([
         dcc.Loading(
@@ -159,10 +183,34 @@ app.layout = html.Div([
             ),
             type="cube"
         ),
-    ], style={'display': 'flex'}),
+    ], style={'display': 'flex', 'justify-content': 'center'}),
     dcc.Graph(id='predict-WD-graph'),
-    html.Div(children='predict WD with Data'),
-    dash_table.DataTable(data=pdw.to_dict('records'), page_size=10)
+    html.Div(children='Predict PM25 with Data', style={'color': 'green', 'font-weight': 'bold', 'margin-bottom': '10px'}),  # Add a title or description
+    dash_table.DataTable(
+        id='datatable',
+        data=pdi.to_dict('records'),
+        columns=[{'name': col, 'id': col} for col in pdi.columns],  # Assuming pdi is your DataFrame
+        page_size=10,
+        style_table={'overflowX': 'auto'},  # Enable horizontal scroll
+        style_header={
+            'backgroundColor': 'lightgreen',  # Background color for headers
+            'fontWeight': 'bold'  # Bold text for headers
+        },
+        style_data={
+            'whiteSpace': 'normal',  # Allow text wrapping
+            'height': 'auto',  # Set row height to auto
+            'backgroundColor': 'lightyellow'  # Background color for data cells
+        },
+        style_cell={
+            'textAlign': 'center',  # Center-align text in cells
+            'minWidth': '100px',  # Set minimum width of cells
+            'width': '150px',  # Set default width of cells
+            'maxWidth': '300px',  # Set maximum width of cells
+            'overflow': 'hidden',  # Hide overflow content in cells
+            'textOverflow': 'ellipsis',  # Ellipsis for overflow text
+            'border': '1px solid green'  # Border around cells
+        }
+    )
 
 ])
 
@@ -195,8 +243,29 @@ def update_selected_chart(chart_type):
     elif chart_type == 'tablex':
         return dcc.Loading(
             dash_table.DataTable(
-                data=df.to_dict('records'),
-                page_size=10
+                id='datatable',
+                data=pdi.to_dict('records'),
+                columns=[{'name': col, 'id': col} for col in pdi.columns],  # Assuming pdi is your DataFrame
+                page_size=10,
+                style_table={'overflowX': 'auto'},  # Enable horizontal scroll
+                style_header={
+                    'backgroundColor': 'lightgreen',  # Background color for headers
+                    'fontWeight': 'bold'  # Bold text for headers
+                },
+                style_data={
+                    'whiteSpace': 'normal',  # Allow text wrapping
+                    'height': 'auto',  # Set row height to auto
+                    'backgroundColor': 'lightyellow'  # Background color for data cells
+                },
+                style_cell={
+                    'textAlign': 'center',  # Center-align text in cells
+                    'minWidth': '100px',  # Set minimum width of cells
+                    'width': '150px',  # Set default width of cells
+                    'maxWidth': '300px',  # Set maximum width of cells
+                    'overflow': 'hidden',  # Hide overflow content in cells
+                    'textOverflow': 'ellipsis',  # Ellipsis for overflow text
+                    'border': '1px solid green'  # Border around cells
+                }
             ),
             type="cube"
         )
