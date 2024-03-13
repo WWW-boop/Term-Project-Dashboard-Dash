@@ -1,12 +1,12 @@
 import dash
-from dash import dcc, html
+from dash import dcc, html, dash_table
 from dash.dependencies import Input, Output
 import pandas as pd
 import plotly.graph_objs as go
 import plotly.express as px
 import dash_bootstrap_components as dbc
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SKETCHY])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SKETCHY, 'style.css'])
 
 # Load data
 df = pd.read_csv('csv/pm25_new2.csv')
@@ -31,6 +31,7 @@ app.layout = html.Div([
                 date=pd.to_datetime('2024-01-01'),
                 display_format='YYYY-MM-DD',
                 className="btn btn-success btn-outline-danger"
+
             ),
             type="cube"
         ),
@@ -66,7 +67,8 @@ app.layout = html.Div([
                 {'label': 'None', 'value': 'none'},
                 {'label': 'Scatter Plot', 'value': 'scatterx'},
                 {'label': 'Bar Chart', 'value': 'barx'},
-                {'label': 'Pie Chart', 'value': 'piex'}
+                {'label': 'Pie Chart', 'value': 'piex'},
+                {'label': 'data','value': 'tablex'}
             ],
             style={'backgroundColor': '#E7DDFF', 'margin-top': '10px', 'margin-bottom': '10px'}
         ),
@@ -129,6 +131,8 @@ app.layout = html.Div([
 
     ], style={'display': 'flex'}),
     dcc.Graph(id='predict-PM25-graph'),
+    html.Div(children='predict PM25  with Data'),
+    dash_table.DataTable(data=pdi.to_dict('records'), page_size=10),
     #wd zone
     html.Div([
         dcc.Loading(
@@ -156,8 +160,13 @@ app.layout = html.Div([
             type="cube"
         ),
     ], style={'display': 'flex'}),
-    dcc.Graph(id='predict-WD-graph')
+    dcc.Graph(id='predict-WD-graph'),
+    html.Div(children='predict WD with Data'),
+    dash_table.DataTable(data=pdw.to_dict('records'), page_size=10)
+
 ])
+
+
 
 
 # Callbacks
@@ -169,11 +178,31 @@ def update_selected_chart(chart_type):
     if chart_type == 'none':
         return html.Div()
     elif chart_type in ['scatterx', 'barx', 'piex']:
+        if chart_type == 'piex':
+            graph_or_table = dcc.Graph(
+                id='pie-chart'
+            )
+        else:
+            graph_or_table = dcc.Graph(
+                id='example-scatter-plot' if chart_type == 'scatterx' else
+                    'bar-chart' if chart_type == 'barx' else 'pie-chart'
+            )
+
         return dcc.Loading(
-            dcc.Graph(id='example-scatter-plot' if chart_type == 'scatterx' else
-                                'bar-chart' if chart_type == 'barx' else 'pie-chart'),
+            html.Div(graph_or_table),
             type="cube"
         )
+    elif chart_type == 'tablex':
+        return dcc.Loading(
+            dash_table.DataTable(
+                data=df.to_dict('records'),
+                page_size=10
+            ),
+            type="cube"
+        )
+    else:
+        return html.Div(children='all')
+
 
 
 def update_figure(filtered_df, plot_type, selected_pollutant):
