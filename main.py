@@ -185,7 +185,7 @@ app.layout = html.Div([
         ),
     ], style={'display': 'flex', 'justify-content': 'center'}),
     dcc.Graph(id='predict-WD-graph'),
-    html.Div(children='Predict PM25 with Data', style={'color': 'green', 'font-weight': 'bold', 'margin-bottom': '10px'}),  # Add a title or description
+    html.Div(children='Predict WD with Data', style={'color': 'green', 'font-weight': 'bold', 'margin-bottom': '10px'}),  # Add a title or description
     dash_table.DataTable(
         id='datatable',
         data=pdi.to_dict('records'),
