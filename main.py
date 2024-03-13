@@ -56,11 +56,11 @@ app.layout = html.Div([
                 id='dropdown',
                 options=columns,
                 value='PM25',
-                style={'backgroundColor': '#E7DDFF', 'borderRadius': '10px'}
+                style={'backgroundColor': '#E7DDFF', 'borderRadius': '10px', 'text-align': 'center'}
             ),
             type="cube"
         ),
-        html.Label('Select Your Favorite Chart Under:'),
+        html.Label('Select Your Favorite Chart Under', style={'text-align': 'center'}),
         dcc.Dropdown(
             id='chart-type-dropdown',
             options=[
