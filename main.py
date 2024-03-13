@@ -64,9 +64,9 @@ app.layout = html.Div([
             id='chart-type-dropdown',
             options=[
                 {'label': 'None', 'value': 'none'},
-                {'label': 'Scatter Plot', 'value': 'scatter'},
-                {'label': 'Bar Chart', 'value': 'bar'},
-                {'label': 'Pie Chart', 'value': 'pie'}
+                {'label': 'Scatter Plot', 'value': 'scatterx'},
+                {'label': 'Bar Chart', 'value': 'barx'},
+                {'label': 'Pie Chart', 'value': 'piex'}
             ],
             style={'backgroundColor': '#E7DDFF', 'margin-top': '10px', 'margin-bottom': '10px'}
         ),
@@ -110,7 +110,7 @@ app.layout = html.Div([
                 initial_visible_month=pd.to_datetime('2024-02-28'),
                 date=pd.to_datetime('2024-02-28'),
                 display_format='YYYY-MM-DD',
-                className="btn btn-success btn-outline-danger"
+                className="btn btn-danger btn-outline-success"
             ),
             type="cube"
         ),
@@ -118,16 +118,16 @@ app.layout = html.Div([
             dcc.DatePickerSingle(
                 id='end-date-picker-v2',
                 min_date_allowed=pd.to_datetime('2024-02-29'),
-                max_date_allowed=pd.to_datetime('2024-03-28'),
-                initial_visible_month=pd.to_datetime('2024-03-28'),
-                date=pd.to_datetime('2024-03-28'),
+                max_date_allowed=pd.to_datetime('2024-04-28'),
+                initial_visible_month=pd.to_datetime('2024-04-28'),
+                date=pd.to_datetime('2024-04-28'),
                 display_format='YYYY-MM-DD',
-                className="btn btn-success btn-outline-danger"
+                className="btn btn-danger btn-outline-success"
             ),
             type="cube"
         ),
 
-    ]),
+    ], style={'display': 'flex'}),
     dcc.Graph(id='predict-PM25-graph'),
     #wd zone
     html.Div([
@@ -139,7 +139,7 @@ app.layout = html.Div([
                 initial_visible_month=pd.to_datetime('2024-02-28'),
                 date=pd.to_datetime('2024-02-28'),
                 display_format='YYYY-MM-DD',
-                className="btn btn-success btn-outline-danger"
+                className="btn btn-danger btn-outline-success"
             ),
             type="cube"
         ),
@@ -147,15 +147,15 @@ app.layout = html.Div([
             dcc.DatePickerSingle(
                 id='end-date-picker-v3',
                 min_date_allowed=pd.to_datetime('2024-02-29'),
-                max_date_allowed=pd.to_datetime('2024-03-28'),
-                initial_visible_month=pd.to_datetime('2024-03-28'),
-                date=pd.to_datetime('2024-03-28'),
+                max_date_allowed=pd.to_datetime('2024-04-28'),
+                initial_visible_month=pd.to_datetime('2024-04-28'),
+                date=pd.to_datetime('2024-04-28'),
                 display_format='YYYY-MM-DD',
-                className="btn btn-success btn-outline-danger"
+                className="btn btn-danger btn-outline-success"
             ),
             type="cube"
         ),
-    ]),
+    ], style={'display': 'flex'}),
     dcc.Graph(id='predict-WD-graph')
 ])
 
@@ -168,10 +168,10 @@ app.layout = html.Div([
 def update_selected_chart(chart_type):
     if chart_type == 'none':
         return html.Div()
-    elif chart_type in ['scatter', 'bar', 'pie']:
+    elif chart_type in ['scatterx', 'barx', 'piex']:
         return dcc.Loading(
-            dcc.Graph(id='example-scatter-plot' if chart_type == 'scatter' else
-                                'bar-chart' if chart_type == 'bar' else 'pie-chart'),
+            dcc.Graph(id='example-scatter-plot' if chart_type == 'scatterx' else
+                                'bar-chart' if chart_type == 'barx' else 'pie-chart'),
             type="cube"
         )
 
@@ -287,6 +287,7 @@ def update_bar_chart(selected_pollutant, start_date, end_date):
 )
 def update_pie_chart(selected_pollutant, start_date, end_date):
     filtered_df = df[(df['DATETIMEDATA'] >= start_date) & (df['DATETIMEDATA'] <= end_date)]
+
     return update_figure(filtered_df, 'pie', selected_pollutant)
 
 #predict zone
@@ -305,13 +306,17 @@ def update_predict_PM25(start_date, end_date):
         xaxis_title='Date',
         yaxis_title='Prediction',
         template="plotly_white",
+        plot_bgcolor='#E4F9F5',  # สีพื้นหลังกราฟ
+        paper_bgcolor='#E4F9F5',
         xaxis=dict(
             rangeselector=dict(
                 buttons=list([
                     dict(count=1, label="1d", step="day", stepmode="backward"),
+                    dict(count=2, label="2d", step="day", stepmode="backward"),
                     dict(count=7, label="1w", step="day", stepmode="backward"),
+                    dict(count=14, label="2w", step="day", stepmode="backward"),
                     dict(count=1, label="1m", step="month", stepmode="backward"),
-                    dict(count=6, label="6m", step="month", stepmode="backward"),
+                    dict(count=2, label="2m", step="month", stepmode="backward"),
                     dict(step="all")
                 ])
             ),
@@ -338,13 +343,17 @@ def update_predict_wd(start_date, end_date):
         xaxis_title='Date',
         yaxis_title='Prediction',
         template="plotly_white",
+        plot_bgcolor='#E4F9F5',  # สีพื้นหลังกราฟ
+        paper_bgcolor='#E4F9F5',
         xaxis=dict(
             rangeselector=dict(
                 buttons=list([
                     dict(count=1, label="1d", step="day", stepmode="backward"),
+                    dict(count=2, label="2d", step="day", stepmode="backward"),
                     dict(count=7, label="1w", step="day", stepmode="backward"),
+                    dict(count=14, label="2w", step="day", stepmode="backward"),
                     dict(count=1, label="1m", step="month", stepmode="backward"),
-                    dict(count=6, label="6m", step="month", stepmode="backward"),
+                    dict(count=2, label="2m", step="month", stepmode="backward"),
                     dict(step="all")
                 ])
             ),
