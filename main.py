@@ -9,7 +9,7 @@ import numpy as np
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SKETCHY])
 
-df = pd.read_csv('csv/pm25_new.csv')
+df = pd.read_csv('csv/pm25_new2.csv')
 
 pollutants = ['PM25','O3', 'WS','TEMP', 'RH', 'WD']
 columns = [{'label': col, 'value': col} for col in df.columns if col in pollutants]
