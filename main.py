@@ -188,8 +188,8 @@ app.layout = html.Div([
     html.Div(children='Predict WD with Data', style={'color': 'green', 'font-weight': 'bold', 'margin-bottom': '10px'}),  # Add a title or description
     dash_table.DataTable(
         id='datatable',
-        data=pdi.to_dict('records'),
-        columns=[{'name': col, 'id': col} for col in pdi.columns],  # Assuming pdi is your DataFrame
+        data=pdw.to_dict('records'),
+        columns=[{'name': col, 'id': col} for col in pdw.columns],  # Assuming pdi is your DataFrame
         page_size=10,
         style_table={'overflowX': 'auto'},  # Enable horizontal scroll
         style_header={
@@ -244,8 +244,8 @@ def update_selected_chart(chart_type):
         return dcc.Loading(
             dash_table.DataTable(
                 id='datatable',
-                data=pdi.to_dict('records'),
-                columns=[{'name': col, 'id': col} for col in pdi.columns],  # Assuming pdi is your DataFrame
+                data=df.to_dict('records'),
+                columns=[{'name': col, 'id': col} for col in df.columns],  # Assuming pdi is your DataFrame
                 page_size=10,
                 style_table={'overflowX': 'auto'},  # Enable horizontal scroll
                 style_header={
