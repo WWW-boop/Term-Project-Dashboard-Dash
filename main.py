@@ -70,7 +70,7 @@ app.layout = html.Div([
                 {'label': 'Pie Chart', 'value': 'piex'},
                 {'label': 'data','value': 'tablex'}
             ],
-            style={'backgroundColor': '#E7DDFF', 'borderRadius': '10px'}
+            style={'backgroundColor': '#E7DDFF', 'borderRadius': '10px', 'text-align': 'center'}
         ),
         html.Div(id='selected-chart')
     ]),
